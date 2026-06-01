@@ -1,0 +1,36 @@
+# StyleMail
+
+An AI-powered email style replication tool. Upload emails written 
+by a specific person and the app learns exactly how they write — 
+tone, vocabulary, sentence structure, punctuation habits, phrases. 
+Then rewrite or convert any message into that person's exact style.
+
+## What It Does
+
+- Create contact profiles, each with their own writing style
+- Upload sample emails per contact to train the style profile
+- Compose mode — type what you want to say, get it rewritten in their style
+- Convert mode — paste any email, convert it to their style
+- Editable output before copying
+
+## Tech Stack
+
+- React + Vite
+- OpenAI API (GPT-4o)
+- localStorage — no backend, no database
+- Deployed on Vercel
+
+## How to Run Locally
+
+npm install
+npm run dev
+
+Open http://localhost:5173
+
+## How It Works
+
+Uploaded emails are analyzed by GPT-4o to extract a detailed 
+style profile — greetings, sign-offs, sentence length, vocabulary, 
+verbatim phrases, punctuation habits, and more. Every generation 
+injects the full style profile plus real example emails directly 
+into the prompt, keeping output anchored to the real person's voice.
