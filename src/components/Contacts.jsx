@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getContacts, saveContact, deleteContact, generateId } from "../lib/storage";
+import { getContacts, saveContact, generateId } from "../lib/storage";
 
 export default function Contacts({ onOpen, onGenerate }) {
   const [contacts, setContacts] = useState([]);
@@ -104,12 +104,6 @@ export default function Contacts({ onOpen, onGenerate }) {
                   Generate
                 </button>
               )}
-              <button
-                className="btn-danger-ghost"
-                onClick={(e) => handleDelete(e, c.id)}
-              >
-                Delete
-              </button>
             </div>
           </div>
         ))}
