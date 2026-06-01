@@ -71,7 +71,8 @@ ${emailBlock}`;
 }
 
 export function buildGenerationPrompt(contact, receivedEmail, input, mode) {
-  const emailBlock = contact.emails
+  const emails = contact.emails.slice(-50)  // add this line
+  const emailBlock = emails  // change contact.emails to emails
     .map((e, i) => `EMAIL ${i + 1}:\n${e.text}`)
     .join("\n\n---\n\n");
 

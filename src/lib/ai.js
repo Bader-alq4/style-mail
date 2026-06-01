@@ -51,10 +51,13 @@ function safeParseJSON(text) {
 }
 
 export async function extractStyle(name, emails) {
+  // Only use the 60 most representative emails
+  const capped = emails.slice(-60)
+  
   const [profile, phrasesRaw, doNotUseRaw] = await Promise.all([
-    callOpenAI(buildExtractionPrompt(name, emails), 0.5),
-    callOpenAI(buildPhrasesPrompt(name, emails), 0.3),
-    callOpenAI(buildDoNotUsePrompt(name, emails), 0.3),
+    callOpenAI(buildExtractionPrompt(name, capped), 0.5),
+    callOpenAI(buildPhrasesPrompt(name, capped), 0.3),
+    callOpenAI(buildDoNotUsePrompt(name, capped), 0.3),
   ]);
 
   return {
