@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { saveContact, getContact } from "../lib/storage";
+import { useState, useEffect } from "react";
+import { saveContact } from "../lib/storage";
 import { extractStyle } from "../lib/ai";
 
 export default function ContactDetail({ contact: initialContact, onBack, onGenerate, onUpdate }) {
@@ -12,6 +12,16 @@ export default function ContactDetail({ contact: initialContact, onBack, onGener
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState(contact.name);
   const [nameError, setNameError] = useState("");
+  const [viewingEmail, setViewingEmail] = useState(null);
+
+  useEffect(() => {
+    if (viewingEmail) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [viewingEmail]);
 
   function handleSaveName() {
     const trimmed = nameInput.trim();
@@ -83,6 +93,46 @@ export default function ContactDetail({ contact: initialContact, onBack, onGener
 
   return (
     <div className="page">
+
+      {/* Email viewer modal */}
+      {viewingEmail && (
+        <div className="modal-overlay" onClick={() => setViewingEmail(null)}>
+          <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <span className="modal-title">
+                Email {contact.emails.findIndex(e => e.id === viewingEmail.id) + 1}
+              </span>
+              <div className="row-actions">
+                <button
+                  className="btn-primary small"
+                  onClick={() => {
+                    const updated = {
+                      ...contact,
+                      emails: contact.emails.map(e =>
+                        e.id === viewingEmail.id ? { ...e, text: viewingEmail.text } : e
+                      ),
+                    };
+                    saveContact(updated);
+                    setContact(updated);
+                    onUpdate(updated);
+                    setViewingEmail(null);
+                  }}
+                >
+                  Save
+                </button>
+                <button className="btn-ghost small" onClick={() => setViewingEmail(null)}>Cancel</button>
+              </div>
+            </div>
+            <textarea
+              className="modal-body"
+              value={viewingEmail.text}
+              onChange={(e) => setViewingEmail({ ...viewingEmail, text: e.target.value })}
+              style={{ resize: "none", border: "none", outline: "none", boxShadow: "none", flex: 1 }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="page-header">
         <div className="page-header-left">
           <button className="btn-back" onClick={onBack}>← Back</button>
@@ -158,14 +208,19 @@ export default function ContactDetail({ contact: initialContact, onBack, onGener
 
         <div className="email-list">
           {contact.emails.map((e, i) => (
-            <div key={e.id} className="email-item">
+            <div
+              key={e.id}
+              className="email-item"
+              onClick={() => setViewingEmail(e)}
+              style={{ cursor: "pointer" }}
+            >
               <div className="email-item-left">
                 <span className="email-number">{i + 1}</span>
                 <span className="email-preview">{previewText(e.text)}</span>
               </div>
               <button
                 className="btn-danger-ghost small"
-                onClick={() => handleDeleteEmail(e.id)}
+                onClick={(ev) => { ev.stopPropagation(); handleDeleteEmail(e.id); }}
               >
                 Remove
               </button>
